@@ -9,7 +9,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from tqdm import tqdm
 
-DEBUG = False
+DEBUG = True
 SCALE = 1.3
 IS_CONTOURS = False
 
@@ -18,10 +18,10 @@ def remove_special_characters(input_string):
     return re.sub(r'[^a-zA-Z0-9_]', '_', input_string)
 
 
-images_folder = os.path.expanduser("~/DENIS_GAEV/TRAIN/AUC_data/SSL_Pup/SmalOriginal/Image")
-masks_folder = os.path.expanduser("~/DENIS_GAEV/TRAIN/AUC_data/SSL_Pup/SmalOriginal/Mask")
+images_folder = os.path.expanduser("~/DENIS_GAEV/TRAIN/AUC_data/NFS_Pup/2018-2021_TULENY/Image")
+masks_folder = os.path.expanduser("~/DENIS_GAEV/TRAIN/AUC_data/NFS_Pup/2018-2021_TULENY/Mask")
 
-OUTPUT_DIR = os.path.expanduser("~/DENIS_GAEV/TRAIN/TEMP-GAEV")
+OUTPUT_DIR = os.path.expanduser("~/DENIS_GAEV/TRAIN-DATA")
 OUTPUT_FOLDER = os.path.join(OUTPUT_DIR, "yolo_dataset_{0}".format("segmentation" if IS_CONTOURS else "boxes"))
 
 output_images_folder = os.path.join(OUTPUT_FOLDER, "images")
