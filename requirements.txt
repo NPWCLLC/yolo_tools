@@ -1,0 +1,7 @@
+ultralytics
+tensorboard
+numpy
+tqdm
+pandas
+shapely
+Rtree
