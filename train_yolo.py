@@ -25,12 +25,12 @@ if __name__ == '__main__':
     checks()
 
     # Load a model
-    model = YOLO("yolov8x.pt")
+    model = YOLO("yolov8x-seg.pt")
 
-    datasets = os.path.expanduser("~/TRAIN_DATA/NFS-PUPS-BOX/data.yaml")
+    datasets = os.path.expanduser("~/TRAIN_DATA/SSL-CSL-SEG/dataset_ssl-csl_yolo_segm_t80-v20_bg_t50_v10/data.yaml")
 
     results = model.train(
         data=datasets, epochs=600, imgsz=640, batch=48, device=DEVICE,
-        project="NFS-PUPS-BOX", name="train_exp_yolov8", patience=10, save_period=10,
+        project="CSL-SSL-SEG", name="train_exp_yolov8_", patience=10, save_period=10,
     )
     print(results)
