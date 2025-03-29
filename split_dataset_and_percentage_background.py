@@ -167,6 +167,10 @@ class DatasetManager:
             print(f"Для набора {set_name} не хватает пустых аннотаций. Используем максимум: {len(self.empty_images)}")
             num_empty_to_add = len(self.empty_images)
 
+        if set_name=="valid":
+            self.empty_images.reverse()
+            self.empty_labels.reverse()
+
         empty_images_to_add = self.empty_images[:num_empty_to_add]
         empty_labels_to_add = self.empty_labels[:num_empty_to_add]
 
@@ -176,9 +180,9 @@ class DatasetManager:
 
 # Пример использования
 if __name__ == "__main__":
-    images_folder = os.path.expanduser("~/TRAIN_DATA/MERGE_NFS-PUPS-BOXES/train/images")
-    labels_folder = os.path.expanduser("~/TRAIN_DATA/MERGE_NFS-PUPS-BOXES/train/labels")
-    output_folder = os.path.expanduser("~/TRAIN_DATA/dataset_nfs-pups_yolo_boxes_t80-v20_bg_t50_v10")
+    images_folder = os.path.expanduser("~/TRAIN_DATA/SSL-CSL-SEG/SSL-CSL-Segm.Augmented.v4i.yolov11/train/images")
+    labels_folder = os.path.expanduser("~/TRAIN_DATA/SSL-CSL-SEG/SSL-CSL-Segm.Augmented.v4i.yolov11/train/labels")
+    output_folder = os.path.expanduser("~/TRAIN_DATA/SSL-CSL-SEG/dataset_ssl-csl_yolo_segm_t80-v20_bg_t50_v10")
 
     manager = DatasetManager(images_folder, labels_folder, output_folder)
 
