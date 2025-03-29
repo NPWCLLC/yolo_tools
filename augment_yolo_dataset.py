@@ -301,10 +301,10 @@ output_path = os.path.expanduser("~/TRAIN_DATA/SSL-CSL-SEG/SSL-CSL-Segm.Augmente
 # augmentor_bboxes.augment()
 
 # Для сегментации (если требуется):
-augmentor_contours = YoloDatasetAugmentor(dataset_path, output_path, mode="contours")
-augmentor_contours.augment()
+# augmentor_contours = YoloDatasetAugmentor(dataset_path, output_path, mode="contours")
+# augmentor_contours.augment()
 
-# augmentor = YoloDatasetAugmentor(dataset_path, output_path, mode="contours")
-# augmentor.analyze(output_path)
-# print(augmentor.dataset_statistics(output_path))
+augmentor = YoloDatasetAugmentor(dataset_path, output_path, mode="contours")
+augmentor.analyze(output_path)
+print(augmentor.dataset_statistics(output_path))
 
