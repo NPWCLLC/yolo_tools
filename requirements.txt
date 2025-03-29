@@ -1,4 +1,5 @@
 ultralytics
+scikit-learn
 tensorboard
 numpy
 tqdm
