@@ -1,4 +1,5 @@
 ultralytics
+albumentations
 scikit-learn
 tensorboard
 numpy
