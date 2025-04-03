@@ -3,6 +3,8 @@ import cv2
 import glob
 from collections import Counter, defaultdict
 
+import numpy as np
+
 
 class YoloDatasetAugmentor:
     TRANSFORMATIONS = [
@@ -31,6 +33,7 @@ class YoloDatasetAugmentor:
         self.class_distributions = defaultdict(Counter)
         self.empty_labels = defaultdict(list)
         self.valid_labels = defaultdict(list)
+        self.debug_dir = os.path.join(output_path, "debug_with_annotations")
 
         if mode not in ["bboxes", "contours"]:
             raise ValueError(f"Unsupported mode: {mode}. Use 'bboxes' or 'contours'.")
@@ -110,6 +113,62 @@ class YoloDatasetAugmentor:
                 else:
                     self.empty_labels[subset].append(img_file)
 
+    def draw_bboxes(self, image, annotations):
+        """
+        Отрисовка bounding boxes на изображении.
+
+        :param image: Исходное изображение.
+        :param annotations: Аннотации YOLO в формате списка [[x_center, y_center, width, height, class_id], ...].
+        :return: Изображение с отрисованными bounding boxes.
+        """
+        for annotation in annotations:
+            x_center, y_center, width, height, class_id = annotation
+            h, w, _ = image.shape
+
+            # Преобразуем координаты из относительных (YOLO) в абсолютные
+            x1 = int((x_center - width / 2) * w)
+            y1 = int((y_center - height / 2) * h)
+            x2 = int((x_center + width / 2) * w)
+            y2 = int((y_center + height / 2) * h)
+
+            # Случайный цвет для класса
+            color = tuple(np.random.randint(0, 255, size=3).tolist())
+
+            # Отрисовка прямоугольника и подписи класса
+            cv2.rectangle(image, (x1, y1), (x2, y2), color, 2)
+            cv2.putText(image, f"Class {class_id}", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
+
+        return image
+
+    def draw_segmentation(self, image, annotations):
+        """
+        Отрисовка сегментации на изображении.
+
+        :param image: Исходное изображение.
+        :param annotations: Список координат контуров и ID классов [[class_id, x1, y1, x2, y2, ...], ...].
+        :return: Изображение с отрисованной сегментацией.
+        """
+        h, w, _ = image.shape
+        for annotation in annotations:
+            class_id = annotation[0]
+            points = annotation[1:]
+
+            # Преобразуем нормализованные координаты (YOLO) в пиксели
+            contour = [(int(x * w), int(y * h)) for x, y in points[0]]
+
+
+            # Случайный цвет для каждого класса
+            color = tuple(np.random.randint(0, 255, size=3).tolist())
+
+            # Отрисовка контура
+            cv2.polylines(image, [np.array(contour, np.int32)], isClosed=True, color=color, thickness=2)
+            if contour:
+                center_x, center_y = contour[0]
+                cv2.putText(image, f"Class {class_id}", (center_x, center_y - 10),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
+
+        return image
+
     def augment(self):
         """
         Метод для выполнения аугментаций на всем датасете.
@@ -156,15 +215,6 @@ class YoloDatasetAugmentor:
             else:
                 annotations = self.read_segmentation_labels(label_path)
 
-            # # Копируем оригинал в output_path
-            # cv2.imwrite(os.path.join(output_images_dir, img_name), img)
-            # if self.mode == "bboxes":
-            #     self.write_yolo_labels(annotations, os.path.join(output_labels_dir, img_name.replace(".jpg", ".txt")),
-            #                            img)
-            # else:
-            #     self.write_segmentation_labels(annotations,
-            #                                    os.path.join(output_labels_dir, img_name.replace(".jpg", ".txt")))
-
             # Аугментация изображений и аннотаций
             for idx, (is_mirrored, n90rotation) in enumerate(self.TRANSFORMATIONS):
                 transformed_img, transformed_annotations = self.apply_transformation(
@@ -184,6 +234,19 @@ class YoloDatasetAugmentor:
                     self.write_segmentation_labels(transformed_annotations,
                                                    os.path.join(output_labels_dir, new_label_name))
 
+                # Отрисовка изображений с аннотациями для теста
+                if self.debug_dir:
+                    os.makedirs(self.debug_dir, exist_ok=True)
+                    debug_img_path = os.path.join(self.debug_dir, new_img_name)
+                    if self.mode == "bboxes":
+                        # Отрисовываем прямоугольники (bounding boxes)
+                        debug_img = self.draw_bboxes(transformed_img, transformed_annotations)
+                    else:
+                        # Отрисовываем сегментацию
+                        debug_img = self.draw_segmentation(transformed_img, transformed_annotations)
+
+                    cv2.imwrite(debug_img_path, debug_img)
+
     def apply_transformation(self, img, annotations, is_mirrored, n90rotation):
         h, w, _ = img.shape
         if is_mirrored:
@@ -192,6 +255,8 @@ class YoloDatasetAugmentor:
             else:
                 annotations = self.flip_annotations_contours(annotations)
 
+            img = cv2.flip(img, 1)
+
         for _ in range(n90rotation):
             if self.mode == "bboxes":
                 annotations = self.rotate90clockwise_annotations_bboxes(annotations)
@@ -199,8 +264,6 @@ class YoloDatasetAugmentor:
                 annotations = self.rotate90clockwise_annotations_contours(annotations)
             img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
 
-        if is_mirrored:
-            img = cv2.flip(img, 1)
         return img, annotations
 
     def flip_annotations_bboxes(self, bboxes):
@@ -240,7 +303,7 @@ class YoloDatasetAugmentor:
         """
         rotated = []
         for cls, points in contours:
-            rotated_points = [(y, 1 - x) for x, y in points]
+            rotated_points = [(1-y, x) for x, y in points]
             rotated.append((cls, rotated_points))
         return rotated
 
@@ -293,18 +356,17 @@ class YoloDatasetAugmentor:
 
 
 # Пример использования
-dataset_path = os.path.expanduser("~/TRAIN_DATA/SSL-CSL-SEG/SSL-CSL-Segm.v4i.yolov11")
-output_path = os.path.expanduser("~/TRAIN_DATA/SSL-CSL-SEG/SSL-CSL-Segm.Augmented.v4i.yolov11")
+dataset_path = os.path.expanduser("C:\\Users\\omen_\\OneDrive\\Desktop\\dataset_yolo")
+output_path = os.path.expanduser("C:\\Users\\omen_\\OneDrive\\Desktop\\AUGMENT_PV-SEG_test")
 
 # Для боксов:
 # augmentor_bboxes = YoloDatasetAugmentor(dataset_path, output_path, mode="bboxes")
 # augmentor_bboxes.augment()
 
-# Для сегментации (если требуется):
-# augmentor_contours = YoloDatasetAugmentor(dataset_path, output_path, mode="contours")
-# augmentor_contours.augment()
+# Для сегментации:
+augmentor_contours = YoloDatasetAugmentor(dataset_path, output_path, mode="contours")
+augmentor_contours.augment()
 
 augmentor = YoloDatasetAugmentor(dataset_path, output_path, mode="contours")
 augmentor.analyze(output_path)
 print(augmentor.dataset_statistics(output_path))
-
