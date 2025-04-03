@@ -18,7 +18,7 @@ class YoloDatasetAugmentor:
         (True, 3)  # Зеркально отразить и повернуть на 270
     ]
 
-    def __init__(self, dataset_path, output_path, mode="bboxes"):
+    def __init__(self, dataset_path, output_path, debug_dir=None, mode="bboxes"):
         """
         Инициализация.
 
@@ -33,7 +33,10 @@ class YoloDatasetAugmentor:
         self.class_distributions = defaultdict(Counter)
         self.empty_labels = defaultdict(list)
         self.valid_labels = defaultdict(list)
-        self.debug_dir = os.path.join(output_path, "debug_with_annotations")
+        if debug_dir:
+            self.debug_dir = os.path.join(output_path, debug_dir)
+        else:
+            self.debug_dir = None
 
         if mode not in ["bboxes", "contours"]:
             raise ValueError(f"Unsupported mode: {mode}. Use 'bboxes' or 'contours'.")
@@ -356,7 +359,7 @@ class YoloDatasetAugmentor:
 
 
 # Пример использования
-dataset_path = os.path.expanduser("C:\\Users\\omen_\\OneDrive\\Desktop\\dataset_yolo")
+dataset_path = os.path.expanduser("C:\\Users\\omen_\\OneDrive\\Desktop\\MERGE_PV-SEG")
 output_path = os.path.expanduser("C:\\Users\\omen_\\OneDrive\\Desktop\\AUGMENT_PV-SEG_test")
 
 # Для боксов:
@@ -364,7 +367,7 @@ output_path = os.path.expanduser("C:\\Users\\omen_\\OneDrive\\Desktop\\AUGMENT_P
 # augmentor_bboxes.augment()
 
 # Для сегментации:
-augmentor_contours = YoloDatasetAugmentor(dataset_path, output_path, mode="contours")
+augmentor_contours = YoloDatasetAugmentor(dataset_path, output_path, "debug_with_annotations", mode="contours")
 augmentor_contours.augment()
 
 augmentor = YoloDatasetAugmentor(dataset_path, output_path, mode="contours")
