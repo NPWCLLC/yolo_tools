@@ -81,8 +81,8 @@ def process_all_annotations(images_dir, labels_dir, output_dir):
 
 
 # Пример использования
-images_directory = os.path.expanduser("C:\\Users\\omen_\\OneDrive\\Desktop\\AUGMENT_PV-SEG_yolo_t80-v20_bg_t50_v10/train/images")
-labels_directory = os.path.expanduser("C:\\Users\\omen_\\OneDrive\\Desktop\\AUGMENT_PV-SEG_yolo_t80-v20_bg_t50_v10/train/labels")
-output_directory = os.path.expanduser("output")
+images_directory = os.path.expanduser("C:\\Users\\omen_\\OneDrive\\Desktop\\SSL-CSL\\output/train/images")
+labels_directory = os.path.expanduser("C:\\Users\\omen_\\OneDrive\\Desktop\\SSL-CSL\\output/train/labels")
+output_directory = os.path.expanduser("C:\\Users\\omen_\\OneDrive\\Desktop\\SSL-CSL\\output\\debug")
 
 process_all_annotations(images_directory, labels_directory, output_directory)
