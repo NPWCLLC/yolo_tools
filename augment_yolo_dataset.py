@@ -180,7 +180,9 @@ class YoloDatasetAugmentor:
         self._prepare_output_directory()
 
         self.analyze(self.dataset_path)
-        print("Dataset statistics before augmentation:", self.dataset_statistics(self.dataset_path))
+        print("Dataset statistics before augmentation:")
+        for key, value in self.dataset_statistics(self.dataset_path).items():
+            print(f"{key}: {value}")
 
         for subset in self.subsets:
             subset_path = os.path.join(self.dataset_path, subset)
@@ -192,7 +194,9 @@ class YoloDatasetAugmentor:
                 self.augment_subset(images_dir, labels_dir, output_images_dir, output_labels_dir)
 
         self.analyze(self.output_path)
-        print("Dataset statistics after augmentation:", self.dataset_statistics(self.output_path))
+        print("Dataset statistics after augmentation:")
+        for key, value in self.dataset_statistics(self.output_path).items():
+            print(f"{key}: {value}")
 
     def augment_subset(self, images_dir, labels_dir, output_images_dir, output_labels_dir):
         """
@@ -359,17 +363,18 @@ class YoloDatasetAugmentor:
 
 
 # Пример использования
-dataset_path = os.path.expanduser("C:\\Users\\omen_\\OneDrive\\Desktop\\MERGE_PV-SEG")
-output_path = os.path.expanduser("C:\\Users\\omen_\\OneDrive\\Desktop\\AUGMENT_PV-SEG_test")
+dataset_path = os.path.expanduser("C:\\Users\\omen_\\OneDrive\\Desktop\\SSL-CSL\\SSL-CSL-Segm.v7i.yolov11")
+output_path = os.path.expanduser("C:\\Users\\omen_\\OneDrive\\Desktop\\SSL-CSL\\output")
 
 # Для боксов:
 # augmentor_bboxes = YoloDatasetAugmentor(dataset_path, output_path, mode="bboxes")
 # augmentor_bboxes.augment()
 
 # Для сегментации:
-augmentor_contours = YoloDatasetAugmentor(dataset_path, output_path, "debug_with_annotations", mode="contours")
-augmentor_contours.augment()
+# augmentor_contours = YoloDatasetAugmentor(dataset_path, output_path, "debug_with_annotations", mode="contours")
+# augmentor_contours.augment()
 
-augmentor = YoloDatasetAugmentor(dataset_path, output_path, mode="contours")
+augmentor = YoloDatasetAugmentor(None, None, mode="contours")
 augmentor.analyze(output_path)
-print(augmentor.dataset_statistics(output_path))
+for key, value in augmentor.dataset_statistics(output_path).items():
+    print(f"{key}: {value}")
