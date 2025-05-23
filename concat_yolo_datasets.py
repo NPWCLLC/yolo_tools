@@ -85,7 +85,7 @@ def merge_yolo_datasets_to_train(root_dir, output_dir, target_class=None):
 if __name__ == "__main__":
     # Пример использования
     root_dir = os.path.expanduser(
-        "C:\\Users\\omen_\\OneDrive\\Desktop\\PV_dataset")  # Укажите путь к корневой папке с датасетами
+        "F:\\Largha\\PV_dataset")  # Укажите путь к корневой папке с датасетами
     output_dir = os.path.expanduser(
         "C:\\Users\\omen_\\OneDrive\\Desktop\\MERGE_PV-SEG")  # Укажите путь для сохранения данных (все объединится в train)
 
