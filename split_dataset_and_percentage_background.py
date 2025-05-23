@@ -1,6 +1,9 @@
 import os
+import random
 import shutil
 from collections import Counter
+from pathlib import Path
+
 from sklearn.model_selection import train_test_split
 
 
@@ -43,17 +46,28 @@ class DatasetManager:
         # Получение списка файлов с изображениями и метками
         image_files = sorted(f for f in os.listdir(self.images_path) if f.endswith(('.jpg', '.png', '.jpeg')))
         label_files = sorted(f for f in os.listdir(self.labels_path) if f.endswith('.txt'))
+        random.shuffle(image_files)
+
+        # Создаем словарь для поиска соответствующих файлов меток, предполагая,
+        # что имена файлов до расширений совпадают (без учета папок)
+        image_to_label = {os.path.splitext(img)[0]: lbl for img, lbl in zip(sorted(image_files), label_files)}
+
+        # Сортируем файлы меток в соответствии с порядком перемешанного image_files
+        label_files = [image_to_label[os.path.splitext(img)[0]] for img in image_files if
+                              os.path.splitext(img)[0] in image_to_label]
 
         # Проверка на соответствие изображений и меток
         assert len(image_files) == len(label_files), "Число изображений и меток не совпадает!"
         assert all(
-            os.path.splitext(image_files[i])[0] == os.path.splitext(label_files[i])[0]
+            Path(image_files[i]).stem == Path(label_files[i]).stem
             for i in range(len(image_files))
         ), "Изображения и метки отличаются по именам!"
 
         # Фильтрация пустых меток
         for img, lbl in zip(image_files, label_files):
             label_path = os.path.join(self.labels_path, lbl)
+            assert Path(img).stem == Path(lbl).stem, "Изображения и метки отличаются по именам!"
+
             with open(label_path, 'r') as f:
                 content = f.read().strip()
             if content:  # Если файл не пустой
@@ -159,7 +173,7 @@ class DatasetManager:
 
     @staticmethod
     def _copy_files(file_list, src_folder, dst_folder):
-        for file_name in file_list:
+        for i, file_name in enumerate(file_list):
             shutil.copy(str(os.path.join(src_folder, file_name)), str(os.path.join(dst_folder, file_name)))
 
     def _add_empty_annotations(self, num_empty_to_add, target_images_folder, target_labels_folder, set_name):
@@ -180,9 +194,9 @@ class DatasetManager:
 
 # Пример использования
 if __name__ == "__main__":
-    images_folder = os.path.expanduser("~/TRAIN_DATA/SSL-CSL-SEG/SSL-CSL-Segm.Augmented.v4i.yolov11/train/images")
-    labels_folder = os.path.expanduser("~/TRAIN_DATA/SSL-CSL-SEG/SSL-CSL-Segm.Augmented.v4i.yolov11/train/labels")
-    output_folder = os.path.expanduser("~/TRAIN_DATA/SSL-CSL-SEG/dataset_ssl-csl_yolo_segm_t80-v20_bg_t50_v10")
+    images_folder = os.path.expanduser("C:\\Users\\omen_\\OneDrive\\Desktop\\SSL-CSL\\AUGMENT_SSL-CSL-Segm.v7i.yolov11/train/images")
+    labels_folder = os.path.expanduser("C:\\Users\\omen_\\OneDrive\\Desktop\\SSL-CSL\\AUGMENT_SSL-CSL-Segm.v7i.yolov11/train/labels")
+    output_folder = os.path.expanduser("C:\\Users\\omen_\\OneDrive\\Desktop\\SSL-CSL\\AUGMENT_SSL-CSL-Segm.v7i.yolov11_t80-v20")
 
     manager = DatasetManager(images_folder, labels_folder, output_folder)
 
@@ -194,7 +208,7 @@ if __name__ == "__main__":
 
     # Разделение и добавление пустых меток в train и valid
     split_stats = manager.split_dataset(
-        train_size=0.8, val_size=0.2, test_size=0, empty_train_percentage=0.5, empty_val_percentage=0.1
+        train_size=0.8, val_size=0.2, test_size=0, empty_train_percentage=1, empty_val_percentage=0
     )
     print("Статистика по разделению:")
     for key, value in split_stats.items():
