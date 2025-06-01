@@ -86,6 +86,5 @@ The tools in this repository depend on various Python libraries including:
 
 See `requirements.txt` for the complete list of dependencies.
 
-## License
 
-This project is available for use under the terms specified in the repository's license file.
+
