@@ -447,9 +447,9 @@ if __name__ == "__main__":
     # python balance_classes.py --dataset "path/to/dataset" --empty-images "path/to/empty/images" --output "path/to/output"
 
     # Для тестирования можно раскомментировать следующие строки и указать пути к вашим данным:
-    dataset_path = "C:\\Users\\omen_\\OneDrive\\Desktop\\SSL-CSL\\AUGMENT_SSL-CSL-Segm.v7i.yolov11_t80-v20"
-    empty_images_path = "C:\\Users\\omen_\\OneDrive\\Desktop\\SSL-CSL\\empty"
-    output_path = "C:\\Users\\omen_\\OneDrive\\Desktop\\SSL-CSL\\output"
+    dataset_path = ""
+    empty_images_path = ""
+    output_path = ""
 
     balancer = YoloDatasetBalancer(dataset_path, empty_images_path, output_path)
     balancer.analyze_dataset()

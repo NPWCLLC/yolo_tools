@@ -65,8 +65,8 @@ if __name__ == "__main__":
     # args = parser.parse_args()
     
     # Преобразуем пути в абсолютные
-    input_folder = os.path.abspath("D:\\NFS_OPP\\2021_138_OPP\\20210727_1020219\\dataset_yolo_test_pv\\datasets_segmentation\\train")
-    output_folder = os.path.abspath("D:\\NFS_OPP\\2021_138_OPP\\20210727_1020219\\dataset_yolo_test_pv\\datasets_segmentation\\output_folder")
+    input_folder = os.path.abspath("")
+    output_folder = os.path.abspath("")
     
     # Проверяем существование входной папки
     if not os.path.exists(input_folder):

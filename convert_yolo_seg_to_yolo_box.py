@@ -67,7 +67,7 @@ def process_yolo_dataset(root_dir):
         convert_segmentation_to_detection(subset_path, output_path)
 
 if __name__ == "__main__":
-    root_yolo_dir = os.path.expanduser("~/DENIS_GAEV/TRAIN/TEMP-GAEV/SSL-CSL-Segm.v2i.yolov11_balance-class_weight")  # Папка с train, valid, test
+    root_yolo_dir = os.path.expanduser("")  # Папка с train, valid, test
 
     process_yolo_dataset(root_yolo_dir)
 

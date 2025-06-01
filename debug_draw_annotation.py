@@ -90,8 +90,8 @@ def draw_segmentation_annotations(image_path, label_path, output_path=None):
 
 
 # Пример использования
-image_path = os.path.expanduser("~/TRAIN_DATA/SSL-CSL-SEG/dataset_ssl-csl_yolo_segm_t80-v20_bg_t50_v10/train/images/0-0_20220822_160024_02-22_jpg.rf.89d8c319fa685d0c167b55af2a696fe3_aug_0.jpg") # Путь к изображению
-label_path = os.path.expanduser("~/TRAIN_DATA/SSL-CSL-SEG/dataset_ssl-csl_yolo_segm_t80-v20_bg_t50_v10/train/labels/0-0_20220822_160024_02-22_jpg.rf.89d8c319fa685d0c167b55af2a696fe3_aug_0.txt") # Путь к аннотациям YOLO
+image_path = os.path.expanduser("") # Путь к изображению
+label_path = os.path.expanduser("") # Путь к аннотациям YOLO
 
 
 draw_segmentation_annotations(image_path, label_path)

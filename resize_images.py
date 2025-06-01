@@ -25,8 +25,8 @@ def resize_images_in_folder(input_folder, output_folder, target_size):
 
 
 # Укажите параметры
-input_folder = "C:\\Users\\omen_\\OneDrive\\Desktop\\SSL-CSL\\PRE-TRAIN-DATA\\tiles"  # Входящая папка с изображениями
+input_folder = ""  # Входящая папка с изображениями
 output_folder = os.path.join(Path(input_folder).parent,"resized_images")  # Папка для сохранения результата
-target_size = (640, 640)  # Целевой размер, например, 800x800
+target_size = (640, 640)  # Целевой размер, например
 
 resize_images_in_folder(input_folder, output_folder, target_size)

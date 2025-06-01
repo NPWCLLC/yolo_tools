@@ -46,7 +46,7 @@ if __name__ == "__main__":
         fig.show()
 
     # run pretraining
-    data_dir = "C:\\Users\\omen_\\OneDrive\\Desktop\\SSL-CSL\\BALANCE_CLASSES_SSL-CSL-Segm.v7i.yolov11_t80-v20\\train\\images"
+    data_dir = ""
     lightly_train.train(
         out="pre_train_out/my_experiment",
         data=data_dir,

@@ -194,9 +194,9 @@ class DatasetManager:
 
 # Пример использования
 if __name__ == "__main__":
-    images_folder = os.path.expanduser("C:\\Users\\omen_\\OneDrive\\Desktop\\SSL-CSL\\AUGMENT_SSL-CSL-Segm.v7i.yolov11/train/images")
-    labels_folder = os.path.expanduser("C:\\Users\\omen_\\OneDrive\\Desktop\\SSL-CSL\\AUGMENT_SSL-CSL-Segm.v7i.yolov11/train/labels")
-    output_folder = os.path.expanduser("C:\\Users\\omen_\\OneDrive\\Desktop\\SSL-CSL\\AUGMENT_SSL-CSL-Segm.v7i.yolov11_t80-v20")
+    images_folder = os.path.expanduser("")
+    labels_folder = os.path.expanduser("")
+    output_folder = os.path.expanduser("")
 
     manager = DatasetManager(images_folder, labels_folder, output_folder)
 

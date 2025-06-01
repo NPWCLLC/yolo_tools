@@ -363,8 +363,8 @@ class YoloDatasetAugmentor:
 
 
 # Пример использования
-dataset_path = os.path.expanduser("C:\\Users\\omen_\\OneDrive\\Desktop\\SSL-CSL\\SSL-CSL-Segm.v7i.yolov11")
-output_path = os.path.expanduser("C:\\Users\\omen_\\OneDrive\\Desktop\\SSL-CSL\\output")
+dataset_path = os.path.expanduser("")
+output_path = os.path.expanduser("")
 
 # Для боксов:
 # augmentor_bboxes = YoloDatasetAugmentor(dataset_path, output_path, mode="bboxes")
