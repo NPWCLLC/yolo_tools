@@ -11,6 +11,11 @@ This repository contains a collection of utility scripts for working with YOLO (
 pip install -r requirements.txt
 ```
 
+for pretrained model by lightly-train GPU
+```bash
+ pip install lightly-train torch torchvision pytorch-lightning --index-url https://download.pytorch.org/whl/cu118
+```
+
 ## Tools Overview
 
 ### Dataset Preparation
