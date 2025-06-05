@@ -4,6 +4,8 @@ if __name__ == '__main__':
     import torchvision
     import os
 
+    os.environ["NO_ALBUMENTATIONS_UPDATE"] = "1"
+
     DEVICE = []
     print(f"PyTorch version: {torch.__version__}")
     print(f"torchvision version: {torchvision.__version__}")
