@@ -432,7 +432,7 @@ class YoloDatasetBalancer:
 def main():
     parser = argparse.ArgumentParser(description="Балансировка классов в YOLO датасете")
     parser.add_argument("--dataset", required=True, help="Путь к корневой папке датасета")
-    parser.add_argument("--empty-images", required=True, help="Путь к папке с пустыми изображениями")
+    parser.add_argument("--empty", required=True, help="Путь к папке с пустыми изображениями")
     parser.add_argument("--output", required=True, help="Путь для сохранения сбалансированного датасета")
 
     args = parser.parse_args()
@@ -444,15 +444,15 @@ def main():
 
 if __name__ == "__main__":
     # Пример использования:
-    # python balance_classes.py --dataset "path/to/dataset" --empty-images "path/to/empty/images" --output "path/to/output"
+    # python balance_classes.py --dataset "path/to/dataset" --empty "path/to/empty/images" --output "path/to/output"
 
     # Для тестирования можно раскомментировать следующие строки и указать пути к вашим данным:
-    dataset_path = ""
-    empty_images_path = ""
-    output_path = ""
+    # dataset_path = ""
+    # empty_images_path = ""
+    # output_path = ""
 
-    balancer = YoloDatasetBalancer(dataset_path, empty_images_path, output_path)
-    balancer.analyze_dataset()
-    balancer.balance_classes()
+    # balancer = YoloDatasetBalancer(dataset_path, empty_images_path, output_path)
+    # balancer.analyze_dataset()
+    # balancer.balance_classes()
 
-    # main()
+    main()
