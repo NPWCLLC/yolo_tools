@@ -1,3 +1,18 @@
+"""
+Описание: Этот скрипт предназначен для аугментации аннотированных фотографий.
+
+Использование:
+python augment_dataset.py --dataset /path/to/dataset --output /path/to/output --mode bboxes --debug_dir /path/to/output_debug
+
+param:
+ - dataset: Путь к корневой папке датасета (содержит train, valid, test папки).
+ - output: Путь для записи нового аугментированного датасета.
+ - mode: Тип датасета. "bboxes" - обработка боксов, "contours" - обработка контуров.
+ - debug_dir: Папка для сохранения изображений с аннотациями (опционально).
+ - operation: Укажите операцию: "augmentation" для аугментации или "analyze" для анализа (по умолчанию: "augmentation").
+"""
+
+import argparse
 import os
 import cv2
 import glob
@@ -5,6 +20,10 @@ from collections import Counter, defaultdict
 
 import numpy as np
 
+from utils import setting_logs
+
+LOG_FILE = 'augment_yolo_dataset.log'
+logging = setting_logs(LOG_FILE)
 
 class YoloDatasetAugmentor:
     TRANSFORMATIONS = [
@@ -172,7 +191,7 @@ class YoloDatasetAugmentor:
 
         return image
 
-    def augment(self):
+    def run_augment(self):
         """
         Метод для выполнения аугментаций на всем датасете.
         """
@@ -362,19 +381,46 @@ class YoloDatasetAugmentor:
         return contours
 
 
-# Пример использования
-dataset_path = os.path.expanduser("")
-output_path = os.path.expanduser("")
+if __name__ == "__main__":
+    # Пример использования
+    # dataset_path = os.path.expanduser("")
+    # output_path = os.path.expanduser("")
 
-# Для боксов:
-# augmentor_bboxes = YoloDatasetAugmentor(dataset_path, output_path, mode="bboxes")
-# augmentor_bboxes.augment()
+    # Для боксов:
+    # augmentor_bboxes = YoloDatasetAugmentor(dataset_path, output_path, mode="bboxes")
+    # augmentor_bboxes.run_augment()
 
-# Для сегментации:
-# augmentor_contours = YoloDatasetAugmentor(dataset_path, output_path, "debug_with_annotations", mode="contours")
-# augmentor_contours.augment()
+    # Для сегментации:
+    # augmentor_contours = YoloDatasetAugmentor(dataset_path, output_path, "debug_with_annotations", mode="contours")
+    # augmentor_contours.run_augment()
 
-augmentor = YoloDatasetAugmentor(None, None, mode="contours")
-augmentor.analyze(output_path)
-for key, value in augmentor.dataset_statistics(output_path).items():
-    print(f"{key}: {value}")
+    # Статистика
+    # augmentor = YoloDatasetAugmentor(None, None, mode="contours")
+    # augmentor.analyze(output_path)
+    # for key, value in augmentor.dataset_statistics(output_path).items():
+    #     print(f"{key}: {value}")
+
+    parser = argparse.ArgumentParser(description="Скрипт для аугментации датасета YOLO.")
+    parser.add_argument('--dataset', type=str, required=True, help='Путь к датасету.')
+    parser.add_argument('--output', type=str, required=True, help='Путь для сохранения аугментированного датасета.')
+    parser.add_argument('--debug_dir', type=str, help='Папка для сохранения изображений с аннотациями (опционально).')
+    parser.add_argument('--mode', type=str, choices=['bboxes', 'contours'], default='bboxes',
+                        help='Тип аугментации: "bboxes" или "contours".')
+    parser.add_argument('--operation', type=str, choices=['augmentation', 'analyze'], default='augmentation',
+                        help='Укажите операцию: "augmentation" для аугментации или "analyze" для анализа (по умолчанию: "augmentation").')
+
+    args = parser.parse_args()
+    dataset_path, output_path, debug_dir, mode = args.dataset, args.output, args.debug_dir, args.mode
+
+    logging.info("Running augmentation...")
+    logging.info(f"Params: ")
+    logging.info(f"operation - {args.operation}")
+    logging.info(f"dataset - {dataset_path}")
+    logging.info(f"output - {output_path}")
+    logging.info(f"debug_dir - {debug_dir}")
+    logging.info(f"mode - {mode}")
+
+    augmentor = YoloDatasetAugmentor(dataset_path, output_path, debug_dir, mode)
+    augmentor.run_augment()
+
+
