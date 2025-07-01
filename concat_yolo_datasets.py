@@ -1,6 +1,11 @@
+import argparse
 import os
 import shutil
 
+from utils import SUBSET_NAMES, print_statistics, setting_logs
+
+LOG_FILE = 'concat_yolo_datasets.log'
+logging = setting_logs(LOG_FILE)
 
 def merge_yolo_datasets_to_train(root_dir, output_dir, target_class=None):
     """
@@ -29,7 +34,7 @@ def merge_yolo_datasets_to_train(root_dir, output_dir, target_class=None):
             continue
 
         # Определяем подкаталоги (train, val, test или один train)
-        subsets = ["train", "valid", "test"]  # Все возможные поддиректории
+        subsets = SUBSET_NAMES  # Все возможные поддиректории
         for subset in subsets:
             subset_path = os.path.join(dataset_path, subset)
 
@@ -65,29 +70,41 @@ def merge_yolo_datasets_to_train(root_dir, output_dir, target_class=None):
                             with open(old_label_path, "r") as label_file:
                                 lines = label_file.readlines()
 
-                            if target_class is not None:
-                                # Переписываем содержимое файла, меняя класс на target_class
-                                with open(new_label_path, "w") as output_label_file:
-                                    for line in lines:
-                                        parts = line.strip().split()
-                                        if len(parts) > 0:
-                                            parts[0] = str(target_class)  # Заменяем номер класса на целевой класс
-                                            output_label_file.write(" ".join(parts) + "\n")
+                            with open(new_label_path, "w") as output_label_file:
+                                for line in lines:
+                                    parts = line.strip().split()
+                                    if len(parts) > 0 and target_class is not None:
+                                        parts[0] = str(target_class)  # Заменяем номер класса на целевой класс
+                                        output_label_file.write(" ".join(parts) + "\n")
+                                    else:
+                                        output_label_file.write(line)
+
+
                         else:
-                            print(f"Пропуск аннотации для {filename} (нет .txt файла)")
+                            logging.info(f"Пропуск аннотации для {filename} (нет .txt файла)")
 
         # Увеличиваем счетчик после обработки текущего набора данных
         dataset_count += 1
 
-    print(f"Объединение завершено! Все данные сохранены в {images_output_dir} и {labels_output_dir}")
+    logging.info(f"Объединение завершено! Все данные сохранены в {images_output_dir} и {labels_output_dir}")
+    print_statistics(output_dir, logging)
 
 
 if __name__ == "__main__":
-    # Пример использования
-    root_dir = os.path.expanduser(
-        "")  # Укажите путь к корневой папке с датасетами
-    output_dir = os.path.expanduser(
-        "")  # Укажите путь для сохранения данных (все объединится в train)
+
+    # Пример использования:
+    # python concat_yolo_datasets.py --root_dir "path/to/root_dir datasets" --output "path/to/output"
+
+    parser = argparse.ArgumentParser(description="Объединение обучающих наборов")
+    parser.add_argument("--root_dir", type=str, required=True, help="Путь к корневой папке")
+    parser.add_argument("--output", type=str, required=True, help="Путь для сохранения объединенного датасета")
+    parser.add_argument("--target_class", type=int, default=None, help="Задайте целевой класс (опционально)")
+
+    args = parser.parse_args()
+
+    root_dir = args.root_dir
+    output_dir = args.output
+    target_class = args.target_class
 
     # target_class Задайте целевой класс (например, объединить все классы в класс 0)
-    merge_yolo_datasets_to_train(root_dir, output_dir, target_class=0)
+    merge_yolo_datasets_to_train(root_dir, output_dir, target_class=target_class)
