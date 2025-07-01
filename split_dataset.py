@@ -1,3 +1,4 @@
+import argparse
 import os
 import random
 import shutil
@@ -6,6 +7,10 @@ from pathlib import Path
 
 from sklearn.model_selection import train_test_split
 
+from utils import setting_logs, print_statistics
+
+LOG_FILE = 'split_dataset.log'
+logging = setting_logs(LOG_FILE)
 
 class DatasetManager:
     def __init__(self, images_path, labels_path, output_folder):
@@ -191,25 +196,63 @@ class DatasetManager:
         self._copy_files(empty_images_to_add, self.images_path, target_images_folder)
         self._copy_files(empty_labels_to_add, self.labels_path, target_labels_folder)
 
+def main():
 
-# Пример использования
-if __name__ == "__main__":
-    images_folder = os.path.expanduser("")
-    labels_folder = os.path.expanduser("")
-    output_folder = os.path.expanduser("")
+    parser = argparse.ArgumentParser(
+        description="Разделить набор данных train на train, val, и test.")
+    parser.add_argument('--dataset', type=str, required=True,
+                        help="Путь к исходному набору данных")
+    parser.add_argument('--output', type=str, required=True,
+                        help="Путь для сохранения результата (train, val, test)")
+    parser.add_argument('--train_ratio', type=float, default=0.8,
+                        help="Пропорция для train набора данных (по умолчанию 70%)")
+    parser.add_argument('--val_ratio', type=float, default=0.2,
+                        help="Пропорция для val набора данных (по умолчанию 20%)")
+    parser.add_argument('--test_ratio', type=float, default=0,
+                        help="Пропорция для test набора данных (по умолчанию 10%)")
+    parser.add_argument('--empty_train', type=float, default=1,
+                        help="Пропорция для empty_train набора данных (по умолчанию 100%)")
 
-    manager = DatasetManager(images_folder, labels_folder, output_folder)
+    # Чтение аргументов
+    args = parser.parse_args()
+    dataset_path = args.dataset
+    output_dir = args.output
+    test_ratio = args.test_ratio
+    val_ratio = args.val_ratio
+    train_ratio = args.train_ratio
+    empty_train = args.empty_train
+
+    logging.info("Running split dataset script...")
+    logging.info(f"Params: ")
+    logging.info(f"dataset= {dataset_path}")
+    logging.info(f"output= {output_dir}")
+    logging.info(f"train_ratio= {train_ratio}")
+    logging.info(f"val_ratio= {val_ratio}")
+    logging.info(f"test_ratio= {test_ratio}")
+    logging.info(f"empty_train= {empty_train}")
+
+    images_folder = os.path.join(dataset_path, "images")
+    labels_folder = os.path.join(dataset_path, "labels")
+
+
+    manager = DatasetManager(images_folder, labels_folder, output_dir)
 
     # Анализ датасета
     stats = manager.analyze_dataset()
-    print("Статистика по входному набору данных:")
+    logging.info("Статистика по входному набору данных:")
     for key, value in stats.items():
-        print(f"{key}: {value}")
+        logging.info(f"{key}: {value}")
 
-    # Разделение и добавление пустых меток в train и valid
+    # Разделение и добавление пустых меток в train и valid (для valid опционально)
     split_stats = manager.split_dataset(
-        train_size=0.8, val_size=0.2, test_size=0, empty_train_percentage=1, empty_val_percentage=0
+        train_size=train_ratio, val_size=val_ratio, test_size=test_ratio, empty_train_percentage=empty_train, empty_val_percentage=0
     )
-    print("Статистика по разделению:")
+    logging.info("Статистика по разделению:")
     for key, value in split_stats.items():
-        print(f"{key}: {value}")
+        logging.info(f"{key}: {value}")
+
+    print_statistics(output_dir, logging)
+
+# Пример использования
+if __name__ == "__main__":
+    main()
