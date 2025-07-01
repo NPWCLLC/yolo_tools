@@ -41,7 +41,7 @@ Creates a YOLO dataset from a folder of images by generating empty annotation fi
 #### `resize_images.py`
 Resizes all images in a folder to a target size while maintaining aspect ratio. Useful for preparing images for YOLO training.
 
-#### `split_dataset_and_percentage_background.py`
+#### `split_dataset.py`
 Splits a dataset into train/validation/test sets and adds a specified percentage of empty (background) images to each set.
 
 ### Debugging and Visualization
